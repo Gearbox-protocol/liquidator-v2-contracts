@@ -11,8 +11,6 @@ import {IPriceFeed} from "@gearbox-protocol/core-v2/contracts/interfaces/IPriceF
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-uint256 constant USD_DECIMALS = 1e8;
-
 contract PriceHelper is IPriceHelper {
     function previewTokens(address creditAccount) external view returns (TokenPriceInfo[] memory results) {
         ICreditManagerV3 creditManager = ICreditManagerV3(ICreditAccountV3(creditAccount).creditManager());
@@ -31,12 +29,13 @@ contract PriceHelper is IPriceHelper {
                 (info.token, info.liquidationThreshold) = creditManager.collateralTokenByMask(1 << i);
                 info.balance = IERC20(info.token).balanceOf(creditAccount);
                 uint256 tokenMask = 1 << i;
+                uint256 tokenScale = 10 ** IERC20Metadata(info.token).decimals();
                 if (info.balance > 10 && tokenMask & enabledTokensMask != 0) {
                     if (info.token == underlying) {
                         info.balanceInUnderlying = info.balance;
                     } else {
                         uint256 priceFrom = _getUnupdatedPrice(oracle, info.token);
-                        info.balanceInUnderlying = info.balance * priceFrom * underlyingScale / (priceTo * USD_DECIMALS);
+                        info.balanceInUnderlying = info.balance * priceFrom * underlyingScale / (priceTo * tokenScale);
                     }
                     tmp[cnt] = info;
                     cnt++;
