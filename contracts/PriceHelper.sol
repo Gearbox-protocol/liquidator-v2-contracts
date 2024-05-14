@@ -52,14 +52,21 @@ contract PriceHelper is IPriceHelper {
     function _getUncheckedPrice(address oracle, address token) internal view returns (uint256 price, uint256 scale) {
         IPriceOracleV3 priceOracle = IPriceOracleV3(oracle);
 
-        // check main price feed only
+        // check main price feed
         IPriceFeed priceFeed = IPriceFeed(priceOracle.priceFeedsRaw(token, false));
         uint8 decimals = priceFeed.decimals();
-        (, int256 answer,,,) = priceFeed.latestRoundData();
+        try priceFeed.latestRoundData() returns (uint80, int256 answer, uint256, uint256, uint80) {
+            price = uint256(answer);
+        } catch {
+            // Try reserve price feed
+            priceFeed = IPriceFeed(priceOracle.priceFeedsRaw(token, true));
+            decimals = priceFeed.decimals();
+            (, int256 answer,,,) = priceFeed.latestRoundData();
+            price = uint256(answer);
+        }
 
-        price = uint256(answer);
         unchecked {
-            scale = 10 ** decimals; // U:[PO-1]
+            scale = 10 ** decimals;
         }
     }
 }
