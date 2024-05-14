@@ -570,6 +570,15 @@
   resolved "https://registry.yarnpkg.com/@gearbox-protocol/core-v3/-/core-v3-1.49.7.tgz#2e1743355649733f53486063703f7160a61ef454"
   integrity sha512-Ovl5FNv6eL8CdsvFcjABFELBij/uP8HpPnn8gCW/BxFPK4TRhufnIoOM4RjhmN4pA2AxYbwpXyXC51Jynv5Cxg==
 
+"@gearbox-protocol/sdk-gov@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@gearbox-protocol/sdk-gov/-/sdk-gov-2.2.5.tgz#040be4a36e2e793a44cd3b1bd6715d6ee90468e7"
+  integrity sha512-KfJiNPlkAjSsD153DNocZhf9J0RqU4Hpz9JVJtQ6GAKKLeZtU7hrJ2bxXE1UE9+qMixi/xiklcz68UIe9YO1yQ==
+  dependencies:
+    ethers "6.12.1"
+    humanize-duration-ts "^2.1.1"
+    zod "^3.22.2"
+
 "@metamask/eth-sig-util@5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@metamask/eth-sig-util/-/eth-sig-util-5.0.2.tgz#c518279a6e17a88135a13d53a0b970f145ff8bce"
@@ -1274,7 +1283,7 @@ ethers@5.7.2, ethers@^5.3.1:
     "@ethersproject/web" "5.7.1"
     "@ethersproject/wordlists" "5.7.0"
 
-ethers@^6.12.1:
+ethers@6.12.1, ethers@^6.12.1:
   version "6.12.1"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.12.1.tgz#517ff6d66d4fd5433e38e903051da3e57c87ff37"
   integrity sha512-j6wcVoZf06nqEcBbDWkKg8Fp895SS96dSnTCjiXT+8vt2o02raTn4Lo9ERUuIVU5bAjoPYeA+7ytQFexFmLuVw==
@@ -1453,6 +1462,11 @@ human-signals@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-5.0.0.tgz#42665a284f9ae0dade3ba41ebc37eb4b852f3a28"
   integrity sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==
+
+humanize-duration-ts@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/humanize-duration-ts/-/humanize-duration-ts-2.1.1.tgz#5382b2789f851005a67229eaf031931d71f37ee9"
+  integrity sha512-TibNF2/fkypjAfHdGpWL/dmWUS0G6Qi+3mKyiB6LDCowbMy+PtzbgPTnFMNTOVAJXDau01jYrJ3tFoz5AJSqhA==
 
 husky@^9.0.11:
   version "9.0.11"
@@ -2340,3 +2354,8 @@ yocto-queue@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
+
+zod@^3.22.2:
+  version "3.23.8"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
+  integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==

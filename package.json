@@ -32,6 +32,7 @@
     "@gearbox-protocol/bots-v3": "^1.5.1",
     "@gearbox-protocol/core-v2": "1.19.0-base.17",
     "@gearbox-protocol/core-v3": "^1.49.7",
+    "@gearbox-protocol/sdk-gov": "^2.2.5",
     "@openzeppelin/contracts": "^4.9.6",
     "@typechain/ethers-v6": "^0.5.1",
     "ethers": "^6.12.1",
