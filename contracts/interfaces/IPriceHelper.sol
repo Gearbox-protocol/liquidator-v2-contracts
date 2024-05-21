@@ -10,6 +10,13 @@ struct TokenPriceInfo {
     uint256 liquidationThreshold;
 }
 
+struct PriceOnDemand {
+    address token;
+    bytes callData;
+}
+
 interface IPriceHelper {
-    function previewTokens(address creditAccount) external view returns (TokenPriceInfo[] memory results);
+    function previewTokens(address creditAccount, PriceOnDemand[] memory priceUpdates)
+        external
+        returns (TokenPriceInfo[] memory results);
 }

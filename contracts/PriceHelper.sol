@@ -3,22 +3,29 @@
 // (c) Gearbox Holdings, 2024
 pragma solidity ^0.8.10;
 
-import {IPriceHelper, TokenPriceInfo} from "./interfaces/IPriceHelper.sol";
+import {IPriceHelper, PriceOnDemand, TokenPriceInfo} from "./interfaces/IPriceHelper.sol";
 import {ICreditAccountV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditAccountV3.sol";
 import {ICreditManagerV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditManagerV3.sol";
 import {IPriceOracleV3} from "@gearbox-protocol/core-v3/contracts/interfaces/IPriceOracleV3.sol";
-import {IPriceFeed} from "@gearbox-protocol/core-v2/contracts/interfaces/IPriceFeed.sol";
+import {IPriceFeed, IUpdatablePriceFeed} from "@gearbox-protocol/core-v2/contracts/interfaces/IPriceFeed.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@gearbox-protocol/core-v3/contracts/interfaces/IExceptions.sol";
 
 contract PriceHelper is IPriceHelper {
-    function previewTokens(address creditAccount) external view returns (TokenPriceInfo[] memory results) {
+    function previewTokens(address creditAccount, PriceOnDemand[] memory priceUpdates)
+        external
+        returns (TokenPriceInfo[] memory results)
+    {
         ICreditManagerV3 creditManager = ICreditManagerV3(ICreditAccountV3(creditAccount).creditManager());
+        address oracle = creditManager.priceOracle();
+
+        _updatePrices(oracle, priceUpdates);
+
         address underlying = creditManager.underlying();
         uint256 underlyingScale = 10 ** IERC20Metadata(underlying).decimals();
-        address oracle = creditManager.priceOracle();
         uint256 enabledTokensMask = creditManager.enabledTokensMaskOf(creditAccount);
-        uint256 priceTo = _getUnupdatedPrice(oracle, underlying);
+        uint256 priceTo = _unsafeGetPrice(oracle, underlying);
 
         uint256 len = creditManager.collateralTokensCount();
         uint256 cnt = 0;
@@ -34,7 +41,7 @@ contract PriceHelper is IPriceHelper {
                     if (info.token == underlying) {
                         info.balanceInUnderlying = info.balance;
                     } else {
-                        uint256 priceFrom = _getUnupdatedPrice(oracle, info.token);
+                        uint256 priceFrom = _unsafeGetPrice(oracle, info.token);
                         info.balanceInUnderlying = info.balance * priceFrom * underlyingScale / (priceTo * tokenScale);
                     }
                     tmp[cnt] = info;
@@ -51,8 +58,22 @@ contract PriceHelper is IPriceHelper {
         }
     }
 
-    /// @dev Returns price feed answer while trying to ignore that can happen due to unupdated PULL oracles
-    function _getUnupdatedPrice(address oracle, address token) internal view returns (uint256 price) {
+    function _updatePrices(address priceOracle, PriceOnDemand[] memory priceUpdates) internal {
+        IPriceOracleV3 oracle = IPriceOracleV3(priceOracle);
+        uint256 len = priceUpdates.length;
+        unchecked {
+            for (uint256 i; i < len; ++i) {
+                address priceFeed = oracle.priceFeeds(priceUpdates[i].token);
+                if (priceFeed == address(0)) {
+                    revert PriceFeedDoesNotExistException();
+                }
+                IUpdatablePriceFeed(priceFeed).updatePrice(priceUpdates[i].callData);
+            }
+        }
+    }
+
+    /// @dev Returns price feed answer while trying to ignore revert that can happen due to unupdated PULL oracles
+    function _unsafeGetPrice(address oracle, address token) internal view returns (uint256 price) {
         IPriceOracleV3 priceOracle = IPriceOracleV3(oracle);
 
         // check main price feed
