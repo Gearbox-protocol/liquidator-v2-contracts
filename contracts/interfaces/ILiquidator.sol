@@ -48,7 +48,7 @@ interface ILiquidator {
         returns (
             address tokenOut,
             uint256 optimalAmount,
-            uint256 optimalAmountUnderlying,
+            uint256 flashLoanAmount,
             uint256 repaidAmount,
             bool isOptimalRepayable
         );

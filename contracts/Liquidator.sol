@@ -275,7 +275,7 @@ contract Liquidator is Ownable {
         returns (
             address tokenOut,
             uint256 optimalAmount,
-            uint256 optimalAmountUnderlying,
+            uint256 flashLoanAmount,
             uint256 repaidAmount,
             bool isOptimalRepayable
         )
@@ -289,7 +289,7 @@ contract Liquidator is Ownable {
 
         (optimalAmount, repaidAmount, isOptimalRepayable) =
             _getOptimalAmount(creditAccount, tokenOut, hfOptimal, creditManager, priceOracle);
-        optimalAmountUnderlying = priceOracle.convert(optimalAmount, tokenOut, creditManager.underlying());
+        flashLoanAmount = priceOracle.convert(optimalAmount, tokenOut, creditManager.underlying());
     }
 
     function _getBestTokenOut(address creditAccount, ICreditManagerV3 creditManager, IPriceOracleV3 priceOracle)
