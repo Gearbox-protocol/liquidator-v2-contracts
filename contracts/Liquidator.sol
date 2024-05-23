@@ -213,16 +213,11 @@ contract Liquidator is ILiquidator, Ownable {
         address[] memory connectors,
         uint256 slippage
     ) internal returns (LiquidationResult memory) {
-        uint256 amountIn;
-
         address conversionAccount = cmToCA[creditManager];
-        try IPartialLiquidationBotV3(partialLiquidationBot).liquidateExactCollateral(
+
+        uint256 amountIn = IPartialLiquidationBotV3(partialLiquidationBot).liquidateExactCollateral(
             creditAccount, assetOut, amountOut, type(uint256).max, conversionAccount, priceUpdates
-        ) returns (uint256 _amountIn) {
-            amountIn = _amountIn;
-        } catch {
-            return LiquidationResult({calls: new MultiCall[](0), profit: type(int256).min, amountIn: 0, amountOut: 0});
-        }
+        );
 
         (MultiCall[] memory calls, uint256 amountOutUnderlying) =
             _getConversionResult(creditManager, conversionAccount, assetOut, amountOut, connectors, slippage);
@@ -255,7 +250,7 @@ contract Liquidator is ILiquidator, Ownable {
                 target: creditFacade,
                 callData: abi.encodeCall(
                     ICreditFacadeV3Multicall.withdrawCollateral, (underlying, type(uint256).max, address(this))
-                    )
+                )
             })
         );
 
