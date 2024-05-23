@@ -270,7 +270,16 @@ contract Liquidator is Ownable {
         address creditAccount,
         uint256 hfOptimal,
         IPartialLiquidationBotV3.PriceUpdate[] memory priceUpdates
-    ) external returns (address tokenOut, uint256 optimalAmount, uint256 repaidAmount, bool isOptimalRepayable) {
+    )
+        external
+        returns (
+            address tokenOut,
+            uint256 optimalAmount,
+            uint256 optimalAmountUnderlying,
+            uint256 repaidAmount,
+            bool isOptimalRepayable
+        )
+    {
         ICreditManagerV3 creditManager = ICreditManagerV3(ICreditAccountV3(creditAccount).creditManager());
         IPriceOracleV3 priceOracle = IPriceOracleV3(creditManager.priceOracle());
 
@@ -280,6 +289,7 @@ contract Liquidator is Ownable {
 
         (optimalAmount, repaidAmount, isOptimalRepayable) =
             _getOptimalAmount(creditAccount, tokenOut, hfOptimal, creditManager, priceOracle);
+        optimalAmountUnderlying = priceOracle.convert(optimalAmount, tokenOut, creditManager.underlying());
     }
 
     function _getBestTokenOut(address creditAccount, ICreditManagerV3 creditManager, IPriceOracleV3 priceOracle)
