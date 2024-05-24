@@ -43,15 +43,7 @@ interface ILiquidator {
         address creditAccount,
         uint256 hfOptimal,
         IPartialLiquidationBotV3.PriceUpdate[] memory priceUpdates
-    )
-        external
-        returns (
-            address tokenOut,
-            uint256 optimalAmount,
-            uint256 flashLoanAmount,
-            uint256 repaidAmount,
-            bool isOptimalRepayable
-        );
+    ) external returns (address tokenOut, uint256 optimalAmount, uint256 repaidAmount, bool isOptimalRepayable);
 
     function registerCM(address creditManager) external;
 

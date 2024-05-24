@@ -270,16 +270,7 @@ contract Liquidator is Ownable {
         address creditAccount,
         uint256 hfOptimal,
         IPartialLiquidationBotV3.PriceUpdate[] memory priceUpdates
-    )
-        external
-        returns (
-            address tokenOut,
-            uint256 optimalAmount,
-            uint256 flashLoanAmount,
-            uint256 repaidAmount,
-            bool isOptimalRepayable
-        )
-    {
+    ) external returns (address tokenOut, uint256 optimalAmount, uint256 repaidAmount, bool isOptimalRepayable) {
         ICreditManagerV3 creditManager = ICreditManagerV3(ICreditAccountV3(creditAccount).creditManager());
         IPriceOracleV3 priceOracle = IPriceOracleV3(creditManager.priceOracle());
 
@@ -289,7 +280,6 @@ contract Liquidator is Ownable {
 
         (optimalAmount, repaidAmount, isOptimalRepayable) =
             _getOptimalAmount(creditAccount, tokenOut, hfOptimal, creditManager, priceOracle);
-        flashLoanAmount = priceOracle.convert(optimalAmount, tokenOut, creditManager.underlying());
     }
 
     function _getBestTokenOut(address creditAccount, ICreditManagerV3 creditManager, IPriceOracleV3 priceOracle)
@@ -349,17 +339,31 @@ contract Liquidator is Ownable {
         uint256 optimalAmount = priceOracle.convert(optimalValueSeized, underlying, tokenOut);
         uint256 repaidAmount = optimalValueSeized * discount / PERCENTAGE_FACTOR;
 
-        (uint128 minDebt,) = ICreditFacadeV3(creditManager.creditFacade()).debtLimits();
+        return _adjustToDebtLimits(creditManager, optimalAmount, repaidAmount, CreditLogic.calcTotalDebt(cdd));
+    }
 
-        uint256 surplusDebt = CreditLogic.calcTotalDebt(cdd) - minDebt;
+    function _adjustToDebtLimits(
+        ICreditManagerV3 creditManager,
+        uint256 optimalAmount,
+        uint256 repaidAmount,
+        uint256 totalDebt
+    ) internal view returns (uint256, uint256, bool) {
+        (uint128 minDebt, uint128 maxDebt) = ICreditFacadeV3(creditManager.creditFacade()).debtLimits();
 
-        if (repaidAmount <= surplusDebt) {
-            return (optimalAmount, repaidAmount, true);
-        } else {
+        if (totalDebt > maxDebt && repaidAmount < totalDebt - maxDebt) {
+            uint256 requiredRepay = totalDebt - maxDebt;
+            optimalAmount = optimalAmount * requiredRepay * 1005 / (repaidAmount * 1000);
+            repaidAmount = requiredRepay * 1005 / 1000;
+            return (optimalAmount, repaidAmount, false);
+        } else if (totalDebt < minDebt) {
+            return (0, 0, false);
+        } else if (repaidAmount > totalDebt - minDebt) {
+            uint256 surplusDebt = totalDebt - minDebt;
             optimalAmount = optimalAmount * surplusDebt * 995 / (repaidAmount * 1000);
             repaidAmount = surplusDebt * 995 / 1000;
             return (optimalAmount, repaidAmount, false);
         }
+        return (optimalAmount, repaidAmount, true);
     }
 
     function _applyOnDemandPriceUpdates(
