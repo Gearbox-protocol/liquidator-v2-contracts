@@ -275,8 +275,8 @@ contract Liquidator is Ownable {
         returns (
             address tokenOut,
             uint256 optimalAmount,
-            uint256 flashLoanAmount,
             uint256 repaidAmount,
+            uint256 flashLoanAmount,
             bool isOptimalRepayable
         )
     {
@@ -289,7 +289,7 @@ contract Liquidator is Ownable {
 
         (optimalAmount, repaidAmount, isOptimalRepayable) =
             _getOptimalAmount(creditAccount, tokenOut, hfOptimal, creditManager, priceOracle);
-        flashLoanAmount = priceOracle.convert(optimalAmount, tokenOut, creditManager.underlying());
+        flashLoanAmount = _getChargedAmount(repaidAmount, creditManager) * 1005 / 1000;
     }
 
     function _getBestTokenOut(address creditAccount, ICreditManagerV3 creditManager, IPriceOracleV3 priceOracle)
@@ -350,6 +350,13 @@ contract Liquidator is Ownable {
         uint256 repaidAmount = optimalValueSeized * discount / PERCENTAGE_FACTOR;
 
         return _adjustToDebtLimits(creditManager, optimalAmount, repaidAmount, CreditLogic.calcTotalDebt(cdd));
+    }
+
+    function _getChargedAmount(uint256 repaidAmount, ICreditManagerV3 creditManager) internal view returns (uint256) {
+        (, uint256 feeLiquidation,,,) = creditManager.fees();
+        uint256 partialFeeLiquidation =
+            feeLiquidation * IPartialLiquidationBotV3(partialLiquidationBot).feeScaleFactor() / PERCENTAGE_FACTOR;
+        return repaidAmount * PERCENTAGE_FACTOR / (PERCENTAGE_FACTOR - partialFeeLiquidation);
     }
 
     function _adjustToDebtLimits(
