@@ -11,14 +11,27 @@
     "url": "https://github.com/Gearbox-protocol/liquidator-v2-contracts"
   },
   "license": "BUSL-1.1",
-  "main": "dist/index.js",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.mts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    }
+  },
   "files": [
     "contracts",
     "dist"
   ],
   "scripts": {
     "clean": "forge clean && rm -rf types dist",
-    "build": "forge build && yarn types && tsc",
+    "build": "forge build && yarn types && tsup",
     "types": "typechain --target ethers-v6 --out-dir ./src/generated ./forge-out/**/*.json",
     "forge-build": "forge clean && forge build",
     "prepare": "husky",
@@ -38,6 +51,7 @@
     "ethers": "^6.12.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
+    "tsup": "^8.0.2",
     "typechain": "^8.1.0",
     "typescript": "^5.4.5"
   },
