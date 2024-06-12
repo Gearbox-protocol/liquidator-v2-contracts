@@ -23,6 +23,16 @@
         "types": "./dist/cjs/index.d.ts",
         "default": "./dist/cjs/index.cjs"
       }
+    },
+    "./abi": {
+      "import": {
+        "types": "./dist/esm/abi/index.d.mts",
+        "default": "./dist/esm/abi/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/abi/index.d.ts",
+        "default": "./dist/cjs/abi/index.cjs"
+      }
     }
   },
   "files": [
@@ -31,9 +41,10 @@
   ],
   "scripts": {
     "clean": "forge clean && rm -rf types dist",
-    "build": "forge build && yarn types && tsup",
+    "build": "forge build && yarn types && yarn abis && tsup",
     "types": "typechain --target ethers-v6 --out-dir ./src/generated ./forge-out/**/*.json",
     "forge-build": "forge clean && forge build",
+    "abis": "wagmi generate",
     "prepare": "husky",
     "prettier": "forge fmt",
     "prettier:ci": "forge fmt"
@@ -48,6 +59,7 @@
     "@gearbox-protocol/sdk-gov": "^2.2.5",
     "@openzeppelin/contracts": "^4.9.6",
     "@typechain/ethers-v6": "^0.5.1",
+    "@wagmi/cli": "^2.1.9",
     "ethers": "^6.12.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
