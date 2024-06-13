@@ -33,6 +33,16 @@
         "types": "./dist/cjs/abi/index.d.ts",
         "default": "./dist/cjs/abi/index.cjs"
       }
+    },
+    "./bytecode": {
+      "import": {
+        "types": "./dist/esm/bytecode/index.d.mts",
+        "default": "./dist/esm/bytecode/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/bytecode/index.d.ts",
+        "default": "./dist/cjs/bytecode/index.cjs"
+      }
     }
   },
   "files": [
@@ -41,10 +51,11 @@
   ],
   "scripts": {
     "clean": "forge clean && rm -rf types dist",
-    "build": "forge build && yarn types && yarn abis && tsup",
+    "build": "forge build && yarn types && yarn abis && yarn bytecode && tsup",
     "types": "typechain --target ethers-v6 --out-dir ./src/generated ./forge-out/**/*.json",
     "forge-build": "forge clean && forge build",
     "abis": "wagmi generate",
+    "bytecode": "node ./generate-bytecode.mjs",
     "prepare": "husky",
     "prettier": "forge fmt",
     "prettier:ci": "forge fmt"
