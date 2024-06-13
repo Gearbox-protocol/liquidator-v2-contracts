@@ -3,7 +3,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig((options) => {
   const commonOptions: Partial<Options> = {
-    entry: ["src/index.ts", "src/abi/index.ts", "src/bytecode/index.ts"],
+    entry: ["src/types/index.ts", "src/abi/index.ts", "src/bytecode/index.ts"],
     clean: true,
     dts: true,
     splitting: false,

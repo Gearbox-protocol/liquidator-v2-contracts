@@ -14,14 +14,14 @@
   "sideEffects": false,
   "exports": {
     "./package.json": "./package.json",
-    ".": {
+    "./types": {
       "import": {
-        "types": "./dist/esm/index.d.mts",
-        "default": "./dist/esm/index.mjs"
+        "types": "./dist/esm/types/index.d.mts",
+        "default": "./dist/esm/types/index.mjs"
       },
       "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
+        "types": "./dist/cjs/types/index.d.ts",
+        "default": "./dist/cjs/types/index.cjs"
       }
     },
     "./abi": {
@@ -52,7 +52,7 @@
   "scripts": {
     "clean": "forge clean && rm -rf types dist",
     "build": "forge build && yarn types && yarn abis && yarn bytecode && tsup",
-    "types": "typechain --target ethers-v6 --show-stack-traces --out-dir ./src/generated ./forge-out/*.sol/*.json",
+    "types": "typechain --target ethers-v6 --out-dir ./src/types/generated ./forge-out/*.sol/*.json",
     "forge-build": "forge clean && forge build",
     "abis": "wagmi generate",
     "bytecode": "node ./generate-bytecode.mjs",
