@@ -42,7 +42,7 @@ interface ILiquidator {
     function getOptimalLiquidation(
         address creditAccount,
         uint256 hfOptimal,
-        IPartialLiquidationBotV3.PriceUpdate[] memory priceUpdates
+        IPartialLiquidationBotV3.PriceUpdate[] calldata priceUpdates
     )
         external
         returns (
