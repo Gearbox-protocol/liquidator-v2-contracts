@@ -17,17 +17,31 @@ import {ICreditFacadeV3Multicall} from "@gearbox-protocol/core-v3/contracts/inte
 import {MultiCall, MultiCallOps} from "@gearbox-protocol/core-v2/contracts/libraries/MultiCall.sol";
 import {Balance} from "@gearbox-protocol/core-v2/contracts/libraries/Balances.sol";
 
-contract BatchLiquidator is IBatchLiquidator {
+contract BatchLiquidator is IBatchLiquidator, Ownable {
     using SafeERC20 for IERC20;
     using MultiCallOps for MultiCall[];
+
+    event SetWhitelistedStatus(address indexed account, bool status);
+
+    mapping(address => bool) public isWhitelisted;
 
     address public router;
 
     constructor(address _router) {
         router = _router;
+        isWhitelisted[_msgSender()] = true;
     }
 
-    function estimateBatch(RouterLiqParams[] calldata params) external returns (LiquidationResult[] memory results) {
+    modifier whitelistedOnly() {
+        if (!isWhitelisted[msg.sender]) revert("Caller not whitelisted");
+        _;
+    }
+
+    function estimateBatch(RouterLiqParams[] calldata params)
+        external
+        whitelistedOnly
+        returns (LiquidationResult[] memory results)
+    {
         uint256 len = params.length;
 
         results = new LiquidationResult[](len);
@@ -59,7 +73,11 @@ contract BatchLiquidator is IBatchLiquidator {
         }
     }
 
-    function liquidateBatch(LiqParams[] calldata params, address to) external returns (bool[] memory success) {
+    function liquidateBatch(LiqParams[] calldata params, address to)
+        external
+        whitelistedOnly
+        returns (bool[] memory success)
+    {
         uint256 len = params.length;
 
         success = new bool[](len);
@@ -100,5 +118,12 @@ contract BatchLiquidator is IBatchLiquidator {
         address creditManager = ICreditAccountV3(creditAccount).creditManager();
         cf = ICreditManagerV3(creditManager).creditFacade();
         underlying = ICreditManagerV3(creditManager).underlying();
+    }
+
+    function setWhitelistedStatus(address account, bool status) external onlyOwner {
+        if (isWhitelisted[account] != status) {
+            isWhitelisted[account] = status;
+            emit SetWhitelistedStatus(account, status);
+        }
     }
 }
