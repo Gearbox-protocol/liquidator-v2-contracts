@@ -8,7 +8,13 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@1inch/solidity-utils/contracts/libraries/SafeERC20.sol";
 
 import {IRouterV3, RouterResult} from "./interfaces/IRouterV3.sol";
-import {IBatchLiquidator, RouterLiqParams, LiquidationResult, LiqParams} from "./interfaces/IBatchLiquidator.sol";
+import {
+    IBatchLiquidator,
+    RouterLiqParams,
+    LiquidationResult,
+    LiqParams,
+    PriceUpdate
+} from "./interfaces/IBatchLiquidator.sol";
 import {ICreditAccountV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditAccountV3.sol";
 import {ICreditManagerV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditManagerV3.sol";
 import {ICreditFacadeV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditFacadeV3.sol";
@@ -16,8 +22,9 @@ import {IPriceOracleV3} from "@gearbox-protocol/core-v3/contracts/interfaces/IPr
 import {ICreditFacadeV3Multicall} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditFacadeV3Multicall.sol";
 import {MultiCall, MultiCallOps} from "@gearbox-protocol/core-v2/contracts/libraries/MultiCall.sol";
 import {Balance} from "@gearbox-protocol/core-v2/contracts/libraries/Balances.sol";
+import {IUpdatablePriceFeed} from "@gearbox-protocol/core-v2/contracts/interfaces/IPriceFeed.sol";
 
-contract BatchLiquidator is IBatchLiquidator, Ownable {
+contract BatchLiquidator is Ownable {
     using SafeERC20 for IERC20;
     using MultiCallOps for MultiCall[];
 
@@ -47,6 +54,8 @@ contract BatchLiquidator is IBatchLiquidator, Ownable {
         results = new LiquidationResult[](len);
 
         for (uint256 i = 0; i < len;) {
+            _applyOnDemandPriceUpdates(params[i].creditAccount, params[i].priceUpdates);
+
             results[i].creditAccount = params[i].creditAccount;
 
             (bool pathSuccess, RouterResult memory res) = _findBestClosePath(params[i]);
@@ -118,6 +127,24 @@ contract BatchLiquidator is IBatchLiquidator, Ownable {
         address creditManager = ICreditAccountV3(creditAccount).creditManager();
         cf = ICreditManagerV3(creditManager).creditFacade();
         underlying = ICreditManagerV3(creditManager).underlying();
+    }
+
+    function _getPriceOracle(address creditAccount) internal view returns (address priceOracle) {
+        address creditManager = ICreditAccountV3(creditAccount).creditManager();
+        priceOracle = ICreditManagerV3(creditManager).priceOracle();
+    }
+
+    /// @dev Applies on-demand price feed updates, reverts if trying to update unknown price feeds
+    function _applyOnDemandPriceUpdates(address creditAccount, PriceUpdate[] calldata priceUpdates) internal {
+        address priceOracle = _getPriceOracle(creditAccount);
+
+        uint256 len = priceUpdates.length;
+        for (uint256 i; i < len; ++i) {
+            PriceUpdate calldata update = priceUpdates[i];
+            address priceFeed = IPriceOracleV3(priceOracle).priceFeedsRaw(update.token, update.reserve);
+            if (priceFeed == address(0)) revert("Price feed does not exist");
+            IUpdatablePriceFeed(priceFeed).updatePrice(update.data);
+        }
     }
 
     function setWhitelistedStatus(address account, bool status) external onlyOwner {
