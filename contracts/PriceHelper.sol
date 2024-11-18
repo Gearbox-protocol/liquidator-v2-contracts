@@ -63,7 +63,7 @@ contract PriceHelper is IPriceHelper {
         uint256 len = priceUpdates.length;
         unchecked {
             for (uint256 i; i < len; ++i) {
-                address priceFeed = oracle.priceFeeds(priceUpdates[i].token);
+                address priceFeed = oracle.priceFeedsRaw(priceUpdates[i].token, priceUpdates[i].reserve);
                 if (priceFeed == address(0)) {
                     revert PriceFeedDoesNotExistException();
                 }

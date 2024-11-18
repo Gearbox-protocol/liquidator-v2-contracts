@@ -13,6 +13,7 @@ struct TokenPriceInfo {
 struct PriceOnDemand {
     address token;
     bytes callData;
+    bool reserve;
 }
 
 interface IPriceHelper {
