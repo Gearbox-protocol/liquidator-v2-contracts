@@ -4,6 +4,8 @@ import AaveLiquidator from "./forge-out/AaveLiquidator.sol/AaveLiquidator.json" 
 import PriceHelper from "./forge-out/PriceHelper.sol/PriceHelper.json" assert { type: "json" };
 import GhoFMTaker from "./forge-out/GhoFMTaker.sol/GhoFMTaker.json" assert { type: "json" };
 import GhoLiquidator from "./forge-out/GhoLiquidator.sol/GhoLiquidator.json" assert { type: "json" };
+import SiloFLTaker from "./forge-out/SiloFLTaker.sol/SiloFLTaker.json" assert { type: "json" };
+import SiloLiquidator from "./forge-out/SiloLiquidator.sol/SiloLiquidator.json" assert { type: "json" };
 import { writeFileSync } from "node:fs";
 
 const address = "`0x${string}`";
@@ -14,6 +16,8 @@ export const BatchLiquidator_bytecode: ${address} = "${BatchLiquidator.bytecode.
 export const GhoFMTaker_bytecode: ${address} = "${GhoFMTaker.bytecode.object}";
 export const GhoLiquidator_bytecode: ${address} = "${GhoLiquidator.bytecode.object}";
 export const PriceHelper_bytecode: ${address} = "${PriceHelper.bytecode.object}";
+export const SiloFLTaker_bytecode: ${address} = "${SiloFLTaker.bytecode.object}";
+export const SiloLiquidator_bytecode: ${address} = "${SiloLiquidator.bytecode.object}";
 `;
 
 writeFileSync("./src/bytecode/bytecode.generated.ts", bytecode, "utf-8");
