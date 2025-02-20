@@ -18,6 +18,9 @@ export default defineConfig({
         "IPartialLiquidator.sol/IPartialLiquidator.json",
         "IPriceHelper.sol/IPriceHelper.json",
         "PriceHelper.sol/PriceHelper.json",
+        "ISiloFlashLoan.sol/ISiloFlashLoan.json",
+        "SiloFLTaker.sol/SiloFLTaker.json",
+        "SiloLiquidator.sol/SiloLiquidator.json",
       ],
       forge: {
         clean: false,
