@@ -5,6 +5,7 @@ pragma solidity ^0.8.10;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {SafeERC20} from "@1inch/solidity-utils/contracts/libraries/SafeERC20.sol";
 
 import {IPartialLiquidator, IntermediateData, LiquidationResult} from "./interfaces/IPartialLiquidator.sol";
@@ -288,7 +289,7 @@ abstract contract AbstractLiquidator is Ownable, IPartialLiquidator {
         address underlying = creditManager.underlying();
 
         CollateralDebtData memory cdd =
-            creditManager.calcDebtAndCollateral(creditAccount, CollateralCalcTask.DEBT_COLLATERAL);
+            creditManager.calcDebtAndCollateral(creditAccount, CollateralCalcTask.DEBT_COLLATERAL_SAFE_PRICES);
 
         uint256 discount;
         uint256 optimalValueSeized;
@@ -296,13 +297,7 @@ abstract contract AbstractLiquidator is Ownable, IPartialLiquidator {
         {
             uint256 ltTokenOut = creditManager.liquidationThresholds(tokenOut);
 
-            (, uint256 feeLiquidation, uint256 liquidationDiscount,,) = creditManager.fees();
-            uint256 totalFee = (
-                (PERCENTAGE_FACTOR - liquidationDiscount)
-                    * IPartialLiquidationBotV3(partialLiquidationBot).premiumScaleFactor()
-                    + feeLiquidation * IPartialLiquidationBotV3(partialLiquidationBot).feeScaleFactor()
-            ) / PERCENTAGE_FACTOR;
-            discount = PERCENTAGE_FACTOR - totalFee;
+            discount = _getLiquidationDiscount(creditManager);
 
             optimalValueSeized = (
                 CreditLogic.calcTotalDebt(cdd) * hfOptimal
@@ -310,10 +305,41 @@ abstract contract AbstractLiquidator is Ownable, IPartialLiquidator {
             ) / (discount * hfOptimal / PERCENTAGE_FACTOR - ltTokenOut);
         }
 
-        uint256 optimalAmount = priceOracle.convert(optimalValueSeized, underlying, tokenOut);
-        uint256 repaidAmount = optimalValueSeized * discount / PERCENTAGE_FACTOR;
+        (uint256 optimalAmount, uint256 repaidAmount) =
+            _getAmounts(optimalValueSeized, underlying, tokenOut, creditManager, priceOracle);
 
         return _adjustToDebtLimits(creditManager, optimalAmount, repaidAmount, CreditLogic.calcTotalDebt(cdd));
+    }
+
+    function _getLiquidationDiscount(ICreditManagerV3 creditManager) internal view returns (uint256) {
+        (, uint256 feeLiquidation, uint256 liquidationDiscount,,) = creditManager.fees();
+        uint256 totalFee = (
+            (PERCENTAGE_FACTOR - liquidationDiscount)
+                * IPartialLiquidationBotV3(partialLiquidationBot).premiumScaleFactor()
+                + feeLiquidation * IPartialLiquidationBotV3(partialLiquidationBot).feeScaleFactor()
+        ) / PERCENTAGE_FACTOR;
+        return PERCENTAGE_FACTOR - totalFee;
+    }
+
+    function _getAmounts(
+        uint256 optimalValueSeized,
+        address underlying,
+        address tokenOut,
+        ICreditManagerV3 creditManager,
+        IPriceOracleV3 priceOracle
+    ) internal view returns (uint256, uint256) {
+        uint256 discount = _getLiquidationDiscount(creditManager);
+        uint256 optimalAmount = _safeConvert(priceOracle, optimalValueSeized, underlying, tokenOut);
+        uint256 repaidAmount = priceOracle.convert(optimalAmount, tokenOut, underlying) * discount / PERCENTAGE_FACTOR;
+
+        return (optimalAmount, repaidAmount);
+    }
+
+    function _getRepaidAmount(uint256 chargedAmount, ICreditManagerV3 creditManager) internal view returns (uint256) {
+        (, uint256 feeLiquidation,,,) = creditManager.fees();
+        uint256 partialFeeLiquidation =
+            feeLiquidation * IPartialLiquidationBotV3(partialLiquidationBot).feeScaleFactor() / PERCENTAGE_FACTOR;
+        return chargedAmount * (PERCENTAGE_FACTOR - partialFeeLiquidation) / PERCENTAGE_FACTOR;
     }
 
     function _getChargedAmount(uint256 repaidAmount, ICreditManagerV3 creditManager) internal view returns (uint256) {
@@ -357,6 +383,17 @@ abstract contract AbstractLiquidator is Ownable, IPartialLiquidator {
             if (priceFeed == address(0)) revert("Updated price feed does not exist.");
             IUpdatablePriceFeed(priceFeed).updatePrice(priceUpdates[i].data);
         }
+    }
+
+    function _safeConvert(IPriceOracleV3 priceOracle, uint256 amount, address underlying, address tokenOut)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 underlyingUSD = priceOracle.convertToUSD(amount, underlying);
+        uint256 tokenOutPrice = priceOracle.getPriceSafe(tokenOut);
+        uint256 tokenOutScale = 10 ** IERC20Metadata(tokenOut).decimals();
+        return underlyingUSD * tokenOutScale / tokenOutPrice;
     }
 
     function setRouter(address newRouter) external onlyOwner {
