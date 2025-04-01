@@ -2,7 +2,7 @@
 libs = ['lib']
 out = 'forge-out'
 
-solc_version = '0.8.17'
+solc_version = '0.8.23'
 src = 'contracts'
 optimizer_runs = 1000
 
@@ -12,7 +12,7 @@ block_timestamp = 1640000000
 gas_limit = 9223372036854775807 # the gas limit in tests
 block_base_fee_per_gas = 100000000
 fs_permissions = [{ access = "read-write", path = "./"}]
-evm_version = 'shanghai'
+evm_version = 'cancun'
 ffi=true
 
 [fuzz]
