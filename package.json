@@ -63,7 +63,7 @@
     "@1inch/solidity-utils": "^2.2.27",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
-    "@gearbox-protocol/router-v3": "1.36.0-experimental.5",
+    "@gearbox-protocol/router-v3": "1.36.0-experimental.6",
     "@openzeppelin/contracts": "^4.9.6",
     "@wagmi/cli": "^2.2.1",
     "husky": "^9.1.7",

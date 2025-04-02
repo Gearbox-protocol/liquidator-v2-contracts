@@ -1137,10 +1137,10 @@
   resolved "https://registry.yarnpkg.com/@gearbox-protocol/integration-types/-/integration-types-1.4.0.tgz#82064ffc46465cb1e42a3a4703749bfdcad4d92f"
   integrity sha512-OtdmeY2BTxMRxml1WOwhNHLMtDRNm+5m+PZmIqulVVaanv8hXiSJhO3zdPQjkHMHqeb9WPzL/lMwOwwQ5T0LEw==
 
-"@gearbox-protocol/router-v3@1.36.0-experimental.5":
-  version "1.36.0-experimental.5"
-  resolved "https://registry.yarnpkg.com/@gearbox-protocol/router-v3/-/router-v3-1.36.0-experimental.5.tgz#1cbd1a13e5d9fe84b9a4ce048b950714b2800f8d"
-  integrity sha512-QcCQo1JjDTLCZ1bv5j/lMcieiqj7BukqwZKIOMXSCUVlwY5dXgORXtezu1Tek1pTNax4reMX4jA5xoTp5OLzOw==
+"@gearbox-protocol/router-v3@1.36.0-experimental.6":
+  version "1.36.0-experimental.6"
+  resolved "https://registry.yarnpkg.com/@gearbox-protocol/router-v3/-/router-v3-1.36.0-experimental.6.tgz#56f0dd7d0398bb6d4292f8c87bd44e0fbd653c03"
+  integrity sha512-/nCoomlpfcL/XOWNnPMYV08JKGvnP+vU9P1yu28WAsQyZBDiycDWmEnmvqp6hmXph8l4Rcs09x8vCnb/R8KL0Q==
   dependencies:
     "@gearbox-protocol/bots-v3" "^1.5.1"
     "@gearbox-protocol/integration-types" "^1.4.0"

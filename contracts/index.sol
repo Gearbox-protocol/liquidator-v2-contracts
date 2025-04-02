@@ -14,3 +14,4 @@ import {IPartialLiquidator} from "@gearbox-router/router-v3/contracts/liquidatio
 import {ISiloFlashLoan} from "@gearbox-router/router-v3/contracts/liquidation/ISiloFlashLoan.sol";
 import {SiloFLTaker} from "@gearbox-router/router-v3/contracts/liquidation/SiloFLTaker.sol";
 import {SiloLiquidator} from "@gearbox-router/router-v3/contracts/liquidation/SiloLiquidator.sol";
+import {IGearboxRouter} from "@gearbox-router/router-v3/contracts/interfaces/IGearboxRouter.sol";

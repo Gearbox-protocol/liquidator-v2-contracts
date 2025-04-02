@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     foundry({
       project: ".",
-      artifacts: "forge-out/",
+      artifacts: "forge-out",
       include: [
         "AaveFLTaker.sol/AaveFLTaker.json",
         "AaveLiquidator.sol/AaveLiquidator.json",
