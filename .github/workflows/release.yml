@@ -28,10 +28,13 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
+      # set and unset github token to pull private dependencies
       - name: Install dependencies
         run: |
+          git config --global url."https://${secrets.LIQ_CONTRACTS_PAT}@github.com/".insteadOf "https://github.com/"
           forge install
           yarn install --frozen-lockfile
+          git config --global --unset url."https://${secrets.LIQ_CONTRACTS_PAT}@github.com/".insteadOf
 
       - name: Build
         run: |
