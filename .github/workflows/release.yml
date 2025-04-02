@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # set and unset github token to pull private dependencies
+      - name: Set github token
+        run: |
+          git config --global url."https://${secrets.LIQ_CONTRACTS_PAT}@github.com/".insteadOf "https://github.com/"
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -28,12 +33,14 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      # set and unset github token to pull private dependencies
       - name: Install dependencies
         run: |
-          git config --global url."https://${secrets.LIQ_CONTRACTS_PAT}@github.com/".insteadOf "https://github.com/"
           forge install
           yarn install --frozen-lockfile
+
+      # set and unset github token to pull private dependencies
+      - name: Unset github token dependencies
+        run: |
           git config --global --unset url."https://${secrets.LIQ_CONTRACTS_PAT}@github.com/".insteadOf
 
       - name: Build
