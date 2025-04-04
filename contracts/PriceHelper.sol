@@ -1,26 +1,16 @@
 // SPDX-License-Identifier: BUSL-1.1
 // Gearbox Protocol. Generalized leverage for DeFi protocols
 // (c) Gearbox Holdings, 2024
-pragma solidity ^0.8.23;
+pragma solidity ^0.8.10;
 
 import {IPriceHelper, PriceOnDemand, TokenPriceInfo} from "./interfaces/IPriceHelper.sol";
 import {ICreditAccountV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditAccountV3.sol";
 import {ICreditManagerV3} from "@gearbox-protocol/core-v3/contracts/interfaces/ICreditManagerV3.sol";
+import {IPriceOracleV3} from "@gearbox-protocol/core-v3/contracts/interfaces/IPriceOracleV3.sol";
+import {IPriceFeed, IUpdatablePriceFeed} from "@gearbox-protocol/core-v2/contracts/interfaces/IPriceFeed.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@gearbox-protocol/core-v3/contracts/interfaces/IExceptions.sol";
-
-interface IPriceFeed {
-    function latestRoundData() external view returns (uint80, int256 answer, uint256, uint256 updatedAt, uint80);
-}
-
-interface IUpdatablePriceFeed is IPriceFeed {
-    function updatePrice(bytes calldata data) external;
-}
-
-interface IPriceOracleV3 {
-    function priceFeedsRaw(address token, bool reserve) external view returns (address);
-}
 
 contract PriceHelper is IPriceHelper {
     function previewTokens(address creditAccount, PriceOnDemand[] memory priceUpdates)

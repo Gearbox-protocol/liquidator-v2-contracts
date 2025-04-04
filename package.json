@@ -51,7 +51,8 @@
   ],
   "scripts": {
     "clean": "forge clean && rm -rf types ./dist ./src/types/generated ./src/**/*.generated.ts",
-    "build": "forge build && yarn abis && yarn bytecode && tsup",
+    "build": "forge build && yarn types && yarn abis && yarn bytecode && tsup",
+    "types": "typechain --target ethers-v6 --out-dir ./src/types/generated ./forge-out/*.sol/*.json",
     "forge-build": "forge clean && forge build",
     "abis": "wagmi generate",
     "bytecode": "node ./generate-bytecode.mjs",
@@ -60,16 +61,22 @@
     "prettier:ci": "forge fmt"
   },
   "devDependencies": {
-    "@1inch/solidity-utils": "^2.2.27",
-    "@commitlint/cli": "^19.8.0",
-    "@commitlint/config-conventional": "^19.8.0",
-    "@gearbox-protocol/router-v3": "1.36.0-experimental.6",
+    "@1inch/solidity-utils": "^2.4.0",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@gearbox-protocol/bots-v3": "^1.5.1",
+    "@gearbox-protocol/core-v2": "1.19.0-base.17",
+    "@gearbox-protocol/core-v3": "^1.49.7",
+    "@gearbox-protocol/sdk-gov": "^2.2.5",
     "@openzeppelin/contracts": "^4.9.6",
-    "@wagmi/cli": "^2.2.1",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.0",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.2"
+    "@typechain/ethers-v6": "^0.5.1",
+    "@wagmi/cli": "^2.1.9",
+    "ethers": "^6.12.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "tsup": "^8.0.2",
+    "typechain": "^8.1.0",
+    "typescript": "^5.4.5"
   },
   "lint-staged": {
     "*.sol": "forge fmt"
