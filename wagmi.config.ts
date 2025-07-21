@@ -21,6 +21,10 @@ export default defineConfig({
         "ISiloFlashLoan.sol/ISiloFlashLoan.json",
         "SiloFLTaker.sol/SiloFLTaker.json",
         "SiloLiquidator.sol/SiloLiquidator.json",
+        "AaveUnwinder.sol/AaveUnwinder.json",
+        "GhoUnwinder.sol/GhoUnwinder.json",
+        "SiloUnwinder.sol/SiloUnwinder.json",
+        "IUnwinder.sol/IUnwinder.json",
       ],
       forge: {
         clean: false,
