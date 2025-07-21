@@ -3,4 +3,4 @@
 	url = https://github.com/foundry-rs/forge-std
 [submodule "lib/@gearbox-protocol/router-v3"]
 	path = lib/@gearbox-protocol/router-v3
-	url = https://github.com/Gearbox-protocol/router-v3
+	url = https://github.com/gearbox-protocol/router-v3
