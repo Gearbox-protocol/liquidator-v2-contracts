@@ -14,16 +14,6 @@
   "sideEffects": false,
   "exports": {
     "./package.json": "./package.json",
-    "./types": {
-      "import": {
-        "types": "./dist/esm/types/index.d.mts",
-        "default": "./dist/esm/types/index.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/types/index.d.ts",
-        "default": "./dist/cjs/types/index.cjs"
-      }
-    },
     "./abi": {
       "import": {
         "types": "./dist/esm/abi/index.d.mts",
@@ -46,37 +36,21 @@
     }
   },
   "files": [
-    "contracts",
     "dist"
   ],
   "scripts": {
-    "clean": "forge clean && rm -rf types ./dist ./src/types/generated ./src/**/*.generated.ts",
-    "build": "forge build && yarn abis && yarn bytecode && tsup",
-    "forge-build": "forge clean && forge build",
-    "abis": "wagmi generate",
-    "bytecode": "node ./generate-bytecode.mjs",
-    "prepare": "husky",
-    "prettier": "forge fmt",
-    "prettier:ci": "forge fmt"
+    "build": "cp -r ./node_modules/@gearbox-protocol/router-v3/dist ./dist"
   },
   "devDependencies": {
-    "@1inch/solidity-utils": "^2.2.27",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@gearbox-protocol/router-v3": "1.36.0-experimental.15",
-    "@openzeppelin/contracts": "^4.9.6",
-    "@wagmi/cli": "^2.3.1",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.3"
-  },
-  "lint-staged": {
-    "*.sol": "forge fmt"
+    "@gearbox-protocol/router-v3": "1.36.0-experimental.35",
+    "husky": "^9.1.7"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }

@@ -1,9 +1,0 @@
-ds-test/=lib/forge-std/lib/ds-test/src/
-forge-std/=lib/forge-std/src/
-@openzeppelin/=node_modules/@openzeppelin/
-@1inch/=node_modules/@1inch/
-@chainlink/=node_modules/@chainlink/
-@gearbox-router=lib/@gearbox-protocol/
-@gearbox-protocol=lib/@gearbox-protocol/router-v3/lib/@gearbox-protocol/
-@redstone-finance=node_modules/@redstone-finance/
-

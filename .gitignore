@@ -1,6 +1,14 @@
 .history
 .idea
 
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+.yarn/*
+
 /abi
 /artifacts
 /build
