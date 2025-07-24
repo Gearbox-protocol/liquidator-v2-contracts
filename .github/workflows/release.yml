@@ -32,8 +32,9 @@ jobs:
 
       - name: Configure access to private npm packages
         run: |
-          echo "registry=https://registry.npmjs.org/" > .npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+          yarn config set npmScopes.gearbox-protocol.npmRegistryServer "https://registry.npmjs.org"
+          yarn config set npmScopes.gearbox-protocol.npmAlwaysAuth true
+          yarn config set npmScopes.gearbox-protocol.npmAuthToken ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: |
