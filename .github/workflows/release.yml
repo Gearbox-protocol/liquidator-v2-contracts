@@ -16,11 +16,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          token: ${{ secrets.LIQ_CONTRACTS_PAT }}
-          persist-credentials: false
+
+      - name: Use Latest Corepack
+        run: |
+          echo "Before: corepack version => $(corepack --version || echo 'not installed')"
+          npm install -g corepack@latest
+          echo "After : corepack version => $(corepack --version)"
+          corepack enable
+          yarn --version
 
       - uses: actions/setup-node@v4
         with:
@@ -30,12 +33,8 @@ jobs:
       - name: Configure access to private npm packages
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-
       - name: Install dependencies
         run: |
-          forge install
           yarn install --frozen-lockfile
 
       - name: Build
