@@ -220,15 +220,15 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^19.8.1"
     "@commitlint/config-conventional": "npm:^19.8.1"
-    "@gearbox-protocol/router-v3": "npm:1.36.0-experimental.35"
+    "@gearbox-protocol/router-v3": "npm:1.36.0-experimental.36"
     husky: "npm:^9.1.7"
   languageName: unknown
   linkType: soft
 
-"@gearbox-protocol/router-v3@npm:1.36.0-experimental.35":
-  version: 1.36.0-experimental.35
-  resolution: "@gearbox-protocol/router-v3@npm:1.36.0-experimental.35"
-  checksum: 10c0/e1e8761e9b7bc931bc0394b5366dd424712388f7e9e5a3eebaaee8b82694ec934317c87c3847383e678a722643e2a0b29375d2456ce4dd77ac5d821d3aaffb48
+"@gearbox-protocol/router-v3@npm:1.36.0-experimental.36":
+  version: 1.36.0-experimental.36
+  resolution: "@gearbox-protocol/router-v3@npm:1.36.0-experimental.36"
+  checksum: 10c0/ddd781561a3bb34eb735e9c92caac57ecc21b6c9f08513ccb9f485e33ea946a0fda3b53d6aafa697cd80e9d476c11129dbf85a2d094cf291b6e2b13e809ed35e
   languageName: node
   linkType: hard
 
